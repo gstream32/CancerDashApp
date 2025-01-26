@@ -7,20 +7,20 @@ import pandas as pd
 # Load your dataset
 def load_data():
     # Example: loading a sample dataset
-    df_function = pd.read_csv('cancer_issue.csv')
-    return df_function
+    df_load = pd.read_csv('cancer_issue.csv')
+    return df_load
 
 
 # Initialize the Dash app
 app = Dash(__name__)
 
 # Prepare initial dataset
-df = load_data()
+df_ui = load_data()
 
 # Identify numeric and categorical columns
-int_columns = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+int_columns = df_ui.select_dtypes(include=['float64', 'int64']).columns.tolist()
 int_columns.remove('PatientID')
-str_columns = df.select_dtypes(include=['object']).columns.tolist()
+str_columns = df_ui.select_dtypes(include=['object']).columns.tolist()
 
 # Prepare column options
 int_options = [{'label': col, 'value': col} for col in int_columns]
@@ -29,7 +29,7 @@ str_options = [{'label': col, 'value': col} for col in str_columns]
 
 # Prepare categorical filter options
 def get_categorical_values(column):
-    return [{'label': val, 'value': val} for val in df[column].unique()]
+    return [{'label': val, 'value': val} for val in df_ui[column].unique()]
 
 
 # Define the layout of the dashboard
@@ -59,7 +59,7 @@ app.layout = html.Div([
 
     # Color By Dropdown
     html.Div([
-        html.Label('Color By:'),
+        html.Label('Color By'),
         dcc.Dropdown(
             id='color-dropdown',
             options=str_options,
