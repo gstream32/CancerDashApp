@@ -93,6 +93,9 @@ app.layout = html.Div([
 
     # Box Plot
     dcc.Graph(id='box-plot'),
+
+    # Pairplot
+    dcc.Graph(id='pairplot')
 ])
 
 
@@ -139,11 +142,18 @@ def update_scatter_plot(x_column, y_column, filter_column, filter_value, cat):
 @callback(
     Output('box-plot', 'figure'),
     [Input('x-axis-dropdown', 'value'),
-     Input('color-dropdown', 'value')]
+     Input('color-dropdown', 'value'),
+     Input('filter-dropdown', 'value'),
+     Input('filter-dropdown-value', 'value')
+     ]
 )
 
-def update_box_plot(int_column, color_column):
+def update_box_plot(int_column, color_column, filter_column, filter_value):
     df = load_data()
+
+    # Apply category filter if both category and value are selected
+    if filter_column and filter_value:
+        df = df[df[filter_column] == filter_value]
 
     if color_column:
         fig = px.box(
@@ -159,6 +169,37 @@ def update_box_plot(int_column, color_column):
             y=int_column,
             title=f'Box Plot of {int_column}',
             labels={'y': int_column}
+        )
+    return fig
+
+# Callback for pairplot like plot
+@callback(
+    Output('pairplot', 'figure'),
+    [Input('color-dropdown', 'value'),
+     Input('filter-dropdown', 'value'),
+     Input('filter-dropdown-value', 'value')
+     ]
+)
+
+def update_pairplot(color_col, filter_column, filter_value):
+    df = load_data()
+
+    # Apply category filter if both category and value are selected
+    if filter_column and filter_value:
+        df = df[df[filter_column] == filter_value]
+
+    if color_col:
+        fig = px.scatter_matrix(
+            df,
+            dimensions=int_columns,
+            color=color_col,
+            title='Pairplot'
+        )
+    else:
+        fig = px.scatter_matrix(
+            df,
+            dimensions=int_columns,
+            title='Pairplot'
         )
     return fig
 
