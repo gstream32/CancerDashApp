@@ -91,6 +91,16 @@ app.layout = html.Div([
     # Scatter plot
     dcc.Graph(id='scatter-plot'),
 
+    # Box-plot Dropdown
+    html.Div([
+        html.Label('Select Box Plot Variable'),
+        dcc.Dropdown(
+            id='box-plot-selection-dropdown',
+            options=int_options,
+            value=int_options[1]['value']
+        )
+    ]),
+
     # Box Plot
     dcc.Graph(id='box-plot'),
 
@@ -141,7 +151,7 @@ def update_scatter_plot(x_column, y_column, filter_column, filter_value, cat):
 # Callback to update box plot
 @callback(
     Output('box-plot', 'figure'),
-    [Input('x-axis-dropdown', 'value'),
+    [Input('box-plot-selection-dropdown', 'value'),
      Input('color-dropdown', 'value'),
      Input('filter-dropdown', 'value'),
      Input('filter-dropdown-value', 'value')
