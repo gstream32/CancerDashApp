@@ -4,9 +4,9 @@ import plotly.express as px
 import pandas as pd
 
 
-# Load your dataset
+# Load dataset
 def load_data():
-    # Example: loading a sample dataset
+
     df_load = pd.read_csv('cancer_issue.csv')
     return df_load
 
