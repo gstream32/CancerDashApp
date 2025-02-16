@@ -115,7 +115,71 @@ app.layout = html.Div([
     ),
 
     # Store data after analysis
-    dcc.Store(id='data')
+    dcc.Store(id='data'),
+
+    # Model Metrics
+    html.Div([
+        html.Div([
+            html.H2(
+                id='f1-value',
+                style={
+                    'textAlign': 'center'
+                }
+            ),
+            html.P("F1 Value",
+                   style={
+                       'textAlign': 'center'
+                   })
+        ], style={
+            'flex': '1',
+            'border': '2px solid #3498db',
+            'borderRadius': '8px',
+            'padding': '20px',
+            'margin': '10px',
+            'boxShadow': '2px 2px 5px rgba(0,0,0,0.2)',
+            'backgroundColor': '#ecf0f1'
+        }),
+        html.Div([
+            html.H2(
+                id='precision-value',
+                style={
+                    'textAlign': 'center'
+                }
+            ),
+            html.P("Precision Value",
+                   style={
+                       'textAlign': 'center'
+                   })
+        ], style={
+            'flex': '1',
+            'border': '2px solid #3498db',
+            'borderRadius': '8px',
+            'padding': '20px',
+            'margin': '10px',
+            'boxShadow': '2px 2px 5px rgba(0,0,0,0.2)',
+            'backgroundColor': '#ecf0f1'
+        }),
+        html.Div([
+            html.H2(
+                id='recall-value',
+                style={
+                    'textAlign': 'center'
+                }
+            ),
+            html.P("Recall Value",
+                   style={
+                       'textAlign': 'center'
+                   })
+        ], style={
+            'flex': '1',
+            'border': '2px solid #3498db',
+            'borderRadius': '8px',
+            'padding': '20px',
+            'margin': '10px',
+            'boxShadow': '2px 2px 5px rgba(0,0,0,0.2)',
+            'backgroundColor': '#ecf0f1'
+        })
+    ])
 
     ]
 )
