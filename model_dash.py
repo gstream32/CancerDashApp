@@ -19,6 +19,15 @@ df_vis = load_data()
 # Create list of cancer types
 cancer_types = np.unique(df_vis['CancerType'])
 
+# Identify numeric and categorical columns
+int_columns = df_vis.select_dtypes(include=['float64', 'int64']).columns.tolist()
+int_columns.remove('PatientID')
+str_columns = df_vis.select_dtypes(include=['object']).columns.tolist()
+
+# Prepare column options
+int_options = [{'label': col, 'value': col} for col in int_columns]
+str_options = [{'label': col, 'value': col} for col in str_columns]
+
 # List of model options
 models = ['Logistic Regression', 'SVC', 'Random Forrest', 'KNN']
 
@@ -49,7 +58,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='cancer-dropdown',
             options=cancer_types,
-            value=cancer_types[0] if cancer_types else None,
+            value=cancer_types,
             placeholder='Select a cancer type',
             persistence=True,
             persistence_type='session',
@@ -81,7 +90,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='model-dropdown',
             options=models,
-            value=models[0] if models else None,
+            value=models,
             placeholder='Select a model type',
             persistence=True,
             persistence_type='session',
@@ -113,6 +122,9 @@ app.layout = html.Div([
                 ':hover': {'backgroundColor': '#34495e'}
             }
     ),
+
+    # Line divider
+    html.Hr(),
 
     # Store data after analysis
     dcc.Store(id='data'),
@@ -179,6 +191,49 @@ app.layout = html.Div([
             'boxShadow': '2px 2px 5px rgba(0,0,0,0.2)',
             'backgroundColor': '#ecf0f1'
         })
+    ]),
+
+    # Scatter plot options
+    html.Div([
+        # X-Axis Dropdown
+        html.Div([
+            html.Label('Select X-Axis'),
+            dcc.Dropdown(
+                id='x-axis-dropdown',
+                options=int_options[0],
+                value=int_options[1]['value'],
+                placeholder='X-Axis',
+                persistence=True,
+                persistence_type='session',
+                style={
+                    'border': '1px solid #ccc',
+                    'borderRadius': '5px',
+                    'padding': '5px',
+                    'marginBottom': '20px',
+                    'fontSize': '1rem'
+                }
+            )
+        ]),
+
+        # Y-Axis Dropdown
+        html.Div([
+            html.Label('Select Y-Axis'),
+            dcc.Dropdown(
+                id='y-axis-dropdown',
+                options=int_options[0],
+                value=int_options[1]['value'],
+                placeholder='Y-Axis',
+                persistence=True,
+                persistence_type='session',
+                style={
+                    'border': '1px solid #ccc',
+                    'borderRadius': '5px',
+                    'padding': '5px',
+                    'marginBottom': '20px',
+                    'fontSize': '1rem'
+                }
+            )
+        ])
     ])
 
     ]
