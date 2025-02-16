@@ -262,7 +262,7 @@ def filter_data(cancer_type, n_clicks):
     df = df[df['CancerType'] == cancer_type]
 
     # Convert target column to binary
-    df['CancerType'] = df['CancerType'].map(
+    df['Recurrence'] = df['Recurrence'].map(
         {'Yes': 1, 'No': 0}
     )
 
