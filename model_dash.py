@@ -1,5 +1,5 @@
 import numpy as np
-from dash import Dash, html, dcc, callback
+from dash import Dash, html, dcc, callback, exceptions
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
@@ -234,7 +234,26 @@ app.layout = html.Div([
                 }
             )
         ])
-    ])
+    ]),
 
-    ]
+    # Scatter plot
+    dcc.Graph(id='scatter-plot'),
+
+    ],
+    # background color
+    style={'backgroundColor': '#f2f2f2'}
 )
+
+@callback(
+    Output('data'),
+    Input('cancer-dropdown', 'value'),
+    Input('button', 'n_clicks')
+)
+
+def filter_data(cancer_type, n_clicks):
+    """Filters data based on dropdown values"""
+
+    if cancer_type is None:
+        raise exceptions.PreventUpdate
+    if n_clicks == 0:
+        raise exceptions.PreventUpdate
