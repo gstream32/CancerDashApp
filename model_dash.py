@@ -27,31 +27,71 @@ app = Dash(__name__)
 
 # Define the layout of the dashboard
 app.layout = html.Div([
-    html.H1('Cancer Model Testing'),
+    html.H1('Cancer Model Testing',
+            style={
+                'textAlign': 'center',
+                'color': '#2c3e50',
+                'fontFamily': 'Arial, sans-serif',
+                'fontSize': '2.5rem',
+                'marginTop': '20px',
+                'marginBottom': '20px'
+            }),
 
     # Cancer Type Selection Dropdown
     html.Div([
-        html.Label('Cancer Selection'),
+        html.Label('Cancer Selection',
+                   style={
+                       'fontWeight': 'bold',
+                       'marginBottom': '8px',
+                       'fontSize': '1rem',
+                       'color': '#2c3e50'
+                   }),
         dcc.Dropdown(
             id='cancer-dropdown',
             options=cancer_types,
             value=cancer_types[0] if cancer_types else None,
             placeholder='Select a cancer type',
             persistence=True,
-            persistence_type='session'
+            persistence_type='session',
+            style={
+                'border': '1px solid #ccc',
+                'borderRadius': '5px',
+                'padding': '5px',
+                'marginBottom': '20px',
+                'fontSize': '1rem'
+            }
         )
-    ]),
+    ],
+    style={
+        'margin': '0 auto',
+        'width': '50%',
+        'textAlign': 'left'
+    }),
 
     # Model Type Selection Dropdown
     html.Div([
-        html.Label('Model Selection'),
+        html.Label('Model Selection',
+                   style={
+                       'fontWeight': 'bold',
+                       'marginBottom': '8px',
+                       'fontSize': '1rem',
+                       'color': '#2c3e50'
+                   }
+                   ),
         dcc.Dropdown(
             id='model-dropdown',
             options=models,
             value=models[0] if models else None,
             placeholder='Select a model type',
             persistence=True,
-            persistence_type='session'
+            persistence_type='session',
+            style={
+                'border': '1px solid #ccc',
+                'borderRadius': '5px',
+                'padding': '5px',
+                'marginBottom': '20px',
+                'fontSize': '1rem'
+            }
         )
     ]),
 
@@ -73,6 +113,9 @@ app.layout = html.Div([
                 ':hover': {'backgroundColor': '#34495e'}
             }
     ),
+
+    # Store data after analysis
+    dcc.Store(id='data')
 
     ]
 )
