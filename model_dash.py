@@ -28,7 +28,7 @@ int_options = [{'label': col, 'value': col} for col in int_columns]
 str_options = [{'label': col, 'value': col} for col in str_columns]
 
 # List of model options
-models = ['Logistic Regression', 'SVC', 'Random Forrest']
+models = ['Logistic Regression', 'SVC', 'Random Forest']
 
 # Initialize the Dash app
 app = Dash(__name__)
@@ -261,6 +261,11 @@ def filter_data(cancer_type, n_clicks):
 
     df = df[df['CancerType'] == cancer_type]
 
+    # Convert target column to binary
+    df['CancerType'] = df['CancerType'].map(
+        {'Yes': 1, 'No': 0}
+    )
+
     return df.to_dict('records')
 
 @callback(
@@ -280,8 +285,8 @@ def create_model(data, model_choice):
     if model_choice == "SVC":
         ##TODO create SVC function
 
-    if model_choice == "Random Forrest":
-        ## TODO create Random Forrest function
+    if model_choice == "Random Forest":
+        ## TODO create Random Forest function
 
 
 @callback(
