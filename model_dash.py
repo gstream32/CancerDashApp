@@ -4,7 +4,6 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 
-from eda_dash import df_ui
 
 
 # Load dataset function
@@ -29,7 +28,7 @@ int_options = [{'label': col, 'value': col} for col in int_columns]
 str_options = [{'label': col, 'value': col} for col in str_columns]
 
 # List of model options
-models = ['Logistic Regression', 'SVC', 'Random Forrest', 'KNN']
+models = ['Logistic Regression', 'SVC', 'Random Forrest']
 
 # Initialize the Dash app
 app = Dash(__name__)
@@ -257,3 +256,79 @@ def filter_data(cancer_type, n_clicks):
         raise exceptions.PreventUpdate
     if n_clicks == 0:
         raise exceptions.PreventUpdate
+
+    df = load_data()
+
+    df = df[df['CancerType'] == cancer_type]
+
+    return df.to_dict('records')
+
+@callback(
+    Output('modeled-data'),
+    Input('data'),
+    Input('model-dropdown', 'value')
+)
+
+def create_model(data, model_choice):
+    """Takes filtered data and fits model"""
+
+    df = pd.DataFrame(data)
+
+    if model_choice == "Logistic Regression":
+        ##TODO create logreg function
+
+    if model_choice == "SVC":
+        ##TODO create SVC function
+
+    if model_choice == "Random Forrest":
+        ## TODO create Random Forrest function
+
+
+@callback(
+    Output('scatter-plot'),
+    Input('modeled-data'),
+    Input('x-axis-dropdown', 'value'),
+    Input('y-axis-dropdown', 'value')
+)
+
+def scatter_plot(data, x, y):
+    """Creates and returns scatterplot based on modeled data
+    and x and y inputs from dropdown"""
+
+    if not data:
+        raise exceptions.PreventUpdate
+
+    df = pd.DataFrame(data)
+
+    #Create scatterplot
+    fig = px.scatter(
+        df,
+        x=x,
+        y=y,
+        color='Accuracy',
+        hover_data=['Accuracy', 'Prediction', x, y],
+        color_continuous_scale='Viridis'
+    )
+
+    #Update layout
+    fig.update_layout(
+        title=f'Scatterplot of {y} vs {x}',
+        xaxis_title=x,
+        yaxis_title=y,
+        font={
+            'family': 'Arial, sans-serif',
+            'size': 12,
+            'color': '#333333'
+        },
+        title_font={
+            'family': 'Arial, sans-serif',
+            'size': 14,
+            'color': '#222222'
+        },
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(245,245,245,1)',
+
+    )
+
+    return fig
+
