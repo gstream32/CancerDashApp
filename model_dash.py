@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 
-from eda import df_ui
+from eda_dash import df_ui
 
 
 # Load dataset function
