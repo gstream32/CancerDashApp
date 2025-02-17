@@ -3,7 +3,7 @@ from dash import Dash, html, dcc, callback, exceptions
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
-from model_creation import log_reg
+from model_creation import log_reg, svm_svc, clf
 
 
 
@@ -126,14 +126,22 @@ app.layout = html.Div([
     # Line divider
     html.Hr(),
 
-    # Store data after analysis
+    # Wrapping pieces in dcc.loading to show spinner
+    dcc.Loading(
+        id='loading',
+        type='circle',
+        children=[
+
+    # Store data for analysis
     dcc.Store(id='data'),
+    dcc.Store(id='modeled-data'),
 
     # Model Metrics
     html.Div([
         html.Div([
             html.H2(
-                id='f1-value',
+                id='f1-score',
+                children='F1 Score: NA',
                 style={
                     'textAlign': 'center'
                 }
@@ -153,7 +161,8 @@ app.layout = html.Div([
         }),
         html.Div([
             html.H2(
-                id='precision-value',
+                id='precision-score',
+                children='Precision Score: NA',
                 style={
                     'textAlign': 'center'
                 }
@@ -173,7 +182,8 @@ app.layout = html.Div([
         }),
         html.Div([
             html.H2(
-                id='recall-value',
+                id='recall-score',
+                children='Recall Score: NA',
                 style={
                     'textAlign': 'center'
                 }
@@ -238,6 +248,8 @@ app.layout = html.Div([
 
     # Scatter plot
     dcc.Graph(id='scatter-plot'),
+            ]
+    )
 
     ],
     # background color
@@ -245,9 +257,11 @@ app.layout = html.Div([
 )
 
 @callback(
-    Output('data'),
-    Input('cancer-dropdown', 'value'),
-    Input('button', 'n_clicks')
+    Output('data', 'data'),
+    [
+        Input('cancer-dropdown', 'value'),
+        Input('button', 'n_clicks')
+    ]
 )
 
 def filter_data(cancer_type, n_clicks):
@@ -270,41 +284,46 @@ def filter_data(cancer_type, n_clicks):
     return df.to_dict('records')
 
 @callback(
-    Output('modeled-data'),
-    Output('f1-score'),
-    Output('recall-score'),
-    Output('precision-score'),
-    Input('data'),
-    Input('model-dropdown', 'value')
+    [
+        Output('modeled-data', 'data'),
+        Output('f1-score', 'children'),
+        Output('recall-score', 'children'),
+        Output('precision-score', 'children')
+        ],
+    [
+        Input('data', 'data'),
+        Input('model-dropdown', 'value')
+    ]
 )
 
 def create_model(data, model_choice):
     """Takes filtered data and fits model"""
 
+    if not data:
+        raise exceptions.PreventUpdate
+
     if model_choice == "Logistic Regression":
        data, f1, recall, precision = log_reg(data, 'Recurrence')
 
     elif model_choice == "SVC":
-        ##TODO create SVC function
+        data, f1, recall, precision = svm_svc(data, 'Recurrence')
 
     elif model_choice == "Random Forest":
-        ## TODO create Random Forest function
+       data, f1, recall, precision = clf(data, 'Recurrence')
 
     else:
-        data = None
-        f1 = 0
-        recall = 0
-        precision = 0
         raise ValueError("Incorrect Model Selection")
 
     return data, f1, recall, precision
 
 
 @callback(
-    Output('scatter-plot'),
-    Input('modeled-data'),
-    Input('x-axis-dropdown', 'value'),
-    Input('y-axis-dropdown', 'value')
+    Output('scatter-plot', 'figure'),
+    [
+        Input('modeled-data', 'data'),
+        Input('x-axis-dropdown', 'value'),
+        Input('y-axis-dropdown', 'value')
+    ]
 )
 
 def scatter_plot(data, x, y):
@@ -348,3 +367,7 @@ def scatter_plot(data, x, y):
 
     return fig
 
+
+# Run the app
+if __name__ == '__main__':
+    app.run_server(debug=True)
