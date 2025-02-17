@@ -49,6 +49,8 @@ clf_param_grid = {
 def log_reg(data, target_col):
 
     df = pd.DataFrame(data)
+    str_cols = df.select_dtypes(include=['object']).columns.tolist()
+    df = pd.get_dummies(df, columns=str_cols)
     x= df.drop(columns=target_col)
     y = df[target_col]
 
@@ -71,6 +73,69 @@ def log_reg(data, target_col):
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_logreg.predict(df.drop(columns=target_col))
+    df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
+
+    return df_final.to_dict('records'), f1, recall, precision
+
+
+def svm_svc(data, target_col):
+    df = pd.DataFrame(data)
+    str_cols = df.select_dtypes(include=['object']).columns.tolist()
+    df = pd.get_dummies(df, columns=str_cols)
+    x = df.drop(columns=target_col)
+    y = df[target_col]
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
+
+    grid_search_svc = GridSearchCV(
+        estimator=SVC(),
+        param_grid=svc_param_grid,
+        scoring='f1',
+        cv=5
+    )
+
+    grid_search_svc.fit(x_train, y_train)
+
+    y_pred = grid_search_svc.predict(x_test)
+
+    f1 = f1_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+
+    df_final = df.copy()
+    df_final['prediction'] = grid_search_svc.predict(df.drop(columns=target_col))
+    df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
+
+    return df_final.to_dict('records'), f1, recall, precision
+
+
+def clf(data, target_col):
+
+    df = pd.DataFrame(data)
+    str_cols = df.select_dtypes(include=['object']).columns.tolist()
+    df = pd.get_dummies(df, columns=str_cols)
+    x = df.drop(columns=target_col)
+    y = df[target_col]
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
+
+    grid_search_clf = GridSearchCV(
+        estimator=RandomForestClassifier(),
+        param_grid=clf_param_grid,
+        scoring='f1',
+        cv=5
+    )
+
+    grid_search_clf.fit(x_train, y_train)
+
+    y_pred = grid_search_clf.predict(x_test)
+
+    f1 = f1_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+
+    df_final = df.copy()
+    df_final['prediction'] = grid_search_clf.predict(df.drop(columns=target_col))
     df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
 
     return df_final.to_dict('records'), f1, recall, precision
