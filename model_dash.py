@@ -3,6 +3,7 @@ from dash import Dash, html, dcc, callback, exceptions
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+from model_creation import log_reg
 
 
 
@@ -270,6 +271,9 @@ def filter_data(cancer_type, n_clicks):
 
 @callback(
     Output('modeled-data'),
+    Output('f1-score'),
+    Output('recall-score'),
+    Output('precision-score'),
     Input('data'),
     Input('model-dropdown', 'value')
 )
@@ -277,16 +281,23 @@ def filter_data(cancer_type, n_clicks):
 def create_model(data, model_choice):
     """Takes filtered data and fits model"""
 
-    df = pd.DataFrame(data)
-
     if model_choice == "Logistic Regression":
-        ##TODO create logreg function
+       data, f1, recall, precision = log_reg(data, 'Recurrence')
 
-    if model_choice == "SVC":
+    elif model_choice == "SVC":
         ##TODO create SVC function
 
-    if model_choice == "Random Forest":
+    elif model_choice == "Random Forest":
         ## TODO create Random Forest function
+
+    else:
+        data = None
+        f1 = 0
+        recall = 0
+        precision = 0
+        raise ValueError("Incorrect Model Selection")
+
+    return data, f1, recall, precision
 
 
 @callback(
