@@ -7,7 +7,7 @@ import pandas as pd
 # Load dataset
 def load_data():
 
-    df_load = pd.read_csv('cancer_issue.csv')
+    df_load = pd.read_csv('cancer_data.csv')
     return df_load
 
 
@@ -16,10 +16,11 @@ app = Dash(__name__)
 
 # Prepare initial dataset
 df_ui = load_data()
+df_ui = df_ui.drop(columns=['Unnamed: 32'])
 
 # Identify numeric and categorical columns
 int_columns = df_ui.select_dtypes(include=['float64', 'int64']).columns.tolist()
-int_columns.remove('PatientID')
+int_columns.remove('id')
 str_columns = df_ui.select_dtypes(include=['object']).columns.tolist()
 
 # Prepare column options

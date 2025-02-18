@@ -10,18 +10,15 @@ from model_creation import log_reg, svm_svc, clf
 # Load dataset function
 def load_data():
 
-    df_load = pd.read_csv('cancer_issue.csv')
+    df_load = pd.read_csv('cancer_data.csv')
     return df_load
 
 # Load data for column selection
 df_vis = load_data()
 
-# Create list of cancer types
-cancer_types = np.unique(df_vis['CancerType'])
-
 # Identify numeric and categorical columns
 int_columns = df_vis.select_dtypes(include=['float64', 'int64']).columns.tolist()
-int_columns.remove('PatientID')
+int_columns.remove('id')
 str_columns = df_vis.select_dtypes(include=['object']).columns.tolist()
 
 # Prepare column options
@@ -45,37 +42,6 @@ app.layout = html.Div([
                 'marginTop': '20px',
                 'marginBottom': '20px'
             }),
-
-    # Cancer Type Selection Dropdown
-    html.Div([
-        html.Label('Cancer Selection',
-                   style={
-                       'fontWeight': 'bold',
-                       'marginBottom': '8px',
-                       'fontSize': '1rem',
-                       'color': '#2c3e50'
-                   }),
-        dcc.Dropdown(
-            id='cancer-dropdown',
-            options=cancer_types,
-            value=cancer_types,
-            placeholder='Select a cancer type',
-            persistence=True,
-            persistence_type='session',
-            style={
-                'border': '1px solid #ccc',
-                'borderRadius': '5px',
-                'padding': '5px',
-                'marginBottom': '20px',
-                'fontSize': '1rem'
-            }
-        )
-    ],
-    style={
-        'margin': '0 auto',
-        'width': '50%',
-        'textAlign': 'left'
-    }),
 
     # Model Type Selection Dropdown
     html.Div([
@@ -258,27 +224,20 @@ app.layout = html.Div([
 
 @callback(
     Output('data', 'data'),
-    [
-        Input('cancer-dropdown', 'value'),
         Input('button', 'n_clicks')
-    ]
 )
 
-def filter_data(cancer_type, n_clicks):
+def filter_data(n_clicks):
     """Filters data based on dropdown values"""
 
-    if cancer_type is None:
-        raise exceptions.PreventUpdate
     if n_clicks == 0:
         raise exceptions.PreventUpdate
 
     df = load_data()
 
-    df = df[df['CancerType'] == cancer_type]
-
     # Convert target column to binary
-    df['Recurrence'] = df['Recurrence'].map(
-        {'Yes': 1, 'No': 0}
+    df['diagnosis'] = df['diagnosis'].map(
+        {'M': 1, 'B': 0}
     )
 
     return df.to_dict('records')
@@ -303,13 +262,13 @@ def create_model(data, model_choice):
         raise exceptions.PreventUpdate
 
     if model_choice == "Logistic Regression":
-       data, f1, recall, precision = log_reg(data, 'Recurrence')
+       data, f1, recall, precision = log_reg(data, 'diagnosis')
 
     elif model_choice == "SVC":
-        data, f1, recall, precision = svm_svc(data, 'Recurrence')
+        data, f1, recall, precision = svm_svc(data, 'diagnosis')
 
     elif model_choice == "Random Forest":
-       data, f1, recall, precision = clf(data, 'Recurrence')
+       data, f1, recall, precision = clf(data, 'diagnosis')
 
     else:
         raise ValueError("Incorrect Model Selection")

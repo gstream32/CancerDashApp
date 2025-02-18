@@ -39,9 +39,9 @@ clf_param_grid = {
     'n_estimators': [100, 200, 500],
     'max_depth': [None, 10, 25, 30],
     'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 5],
-    'max_features': ['Sqrt', 'log2', None],
-    'bootstrap': [True, False],
+    #'min_samples_leaf': [1, 2, 5],
+    #'max_features': ['Sqrt', 'log2', None],
+    #'bootstrap': [True, False],
     'criterion': ['gini', 'entropy']
 
 }
