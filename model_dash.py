@@ -69,7 +69,7 @@ app.layout = html.Div([
             }
         )
     ]),
-
+## TODO add data scaler drop down
     # Submit Button
     html.Button('Run Analysis',
             id='button',
@@ -168,7 +168,8 @@ app.layout = html.Div([
             'backgroundColor': '#ecf0f1'
         })
     ]),
-
+## TODO fix x and y dropdowns to generate proper list of variables
+## TODO add scaled and normal scatter plots
     # Scatter plot options
     html.Div([
         # X-Axis Dropdown
