@@ -30,9 +30,9 @@ logreg_param_grid = [
 
 svc_param_grid = {
     'C': [0.01, 0.1, 1.0, 10, 100],
-    'kernel': ['linear', 'rbf', 'poly'],
+    #'kernel': ['linear', 'rbf', 'poly'],
     'gamma': ['scale', 'auto', 0.1, 1, 10],
-    'degree': [2, 3, 4]
+    #'degree': [2, 3, 4]
 }
 
 clf_param_grid = {
@@ -73,7 +73,7 @@ def log_reg(data, target_col):
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_logreg.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
+    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
 
@@ -104,7 +104,7 @@ def svm_svc(data, target_col):
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_svc.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
+    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
 
@@ -136,6 +136,6 @@ def clf(data, target_col):
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_clf.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = (df_final[target_col] == df_final['prediction']).astype(int)
+    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision

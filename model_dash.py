@@ -19,6 +19,7 @@ df_vis = load_data()
 # Identify numeric and categorical columns
 int_columns = df_vis.select_dtypes(include=['float64', 'int64']).columns.tolist()
 int_columns.remove('id')
+int_columns = sorted(int_columns)
 str_columns = df_vis.select_dtypes(include=['object']).columns.tolist()
 
 # Prepare column options
@@ -168,7 +169,6 @@ app.layout = html.Div([
             'backgroundColor': '#ecf0f1'
         })
     ]),
-## TODO fix x and y dropdowns to generate proper list of variables
 ## TODO add scaled and normal scatter plots
     # Scatter plot options
     html.Div([
@@ -177,8 +177,8 @@ app.layout = html.Div([
             html.Label('Select X-Axis'),
             dcc.Dropdown(
                 id='x-axis-dropdown',
-                options=int_options[0],
-                value=int_options[1]['value'],
+                options=int_options,
+                value=None,
                 placeholder='X-Axis',
                 persistence=True,
                 persistence_type='session',
@@ -197,8 +197,8 @@ app.layout = html.Div([
             html.Label('Select Y-Axis'),
             dcc.Dropdown(
                 id='y-axis-dropdown',
-                options=int_options[0],
-                value=int_options[1]['value'],
+                options=int_options,
+                value=None,
                 placeholder='Y-Axis',
                 persistence=True,
                 persistence_type='session',
@@ -300,8 +300,8 @@ def scatter_plot(data, x, y):
         df,
         x=x,
         y=y,
-        color='Accuracy',
-        hover_data=['Accuracy', 'Prediction', x, y],
+        color='accuracy',
+        hover_data=['accuracy', 'prediction', x, y],
         color_continuous_scale='Viridis'
     )
 
