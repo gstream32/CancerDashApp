@@ -49,6 +49,7 @@ def scale_data(x_train, x_test, scaler_input):
     if scaler_input == "None":
         x_train_return = x_train
         x_test_return = x_test
+        scaler = "None"
 
     elif scaler_input == "Standard":
         scaler = StandardScaler()
@@ -68,7 +69,7 @@ def scale_data(x_train, x_test, scaler_input):
     else:
         raise ValueError("Incorrect Scaler Submission")
 
-    return x_train_return, x_test_return
+    return x_train_return, x_test_return, scaler
 
 def log_reg(data, target_col, scaler_input):
 
@@ -79,7 +80,7 @@ def log_reg(data, target_col, scaler_input):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
-    x_train, x_test = scale_data(x_train, x_test, scaler_input)
+    x_train, x_test, scaler = scale_data(x_train, x_test, scaler_input)
 
     grid_search_logreg = GridSearchCV(
         estimator=LogisticRegression(),
@@ -97,7 +98,13 @@ def log_reg(data, target_col, scaler_input):
     precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
-    df_final['prediction'] = grid_search_logreg.predict(df.drop(columns=target_col))
+
+    if scaler == "None":
+        df_final['prediction'] = grid_search_logreg.predict(df.drop(columns=target_col))
+
+    else:
+        df_final['prediction'] = grid_search_logreg.predict(scaler.transform(df.drop(columns=target_col)))
+
     df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
@@ -111,7 +118,7 @@ def svm_svc(data, target_col, scaler_input):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
-    x_train, x_test = scale_data(x_train, x_test, scaler_input)
+    x_train, x_test, scaler = scale_data(x_train, x_test, scaler_input)
 
     grid_search_svc = GridSearchCV(
         estimator=SVC(),
@@ -129,7 +136,13 @@ def svm_svc(data, target_col, scaler_input):
     precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
-    df_final['prediction'] = grid_search_svc.predict(df.drop(columns=target_col))
+
+    if scaler == "None":
+        df_final['prediction'] = grid_search_svc.predict(df.drop(columns=target_col))
+
+    else:
+        df_final['prediction'] = grid_search_svc.predict(scaler.transform(df.drop(columns=target_col)))
+
     df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
@@ -144,7 +157,7 @@ def clf(data, target_col, scaler_input):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
-    x_train, x_test = scale_data(x_train, x_test, scaler_input)
+    x_train, x_test, scaler = scale_data(x_train, x_test, scaler_input)
 
     grid_search_clf = GridSearchCV(
         estimator=RandomForestClassifier(),
@@ -162,7 +175,13 @@ def clf(data, target_col, scaler_input):
     precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
-    df_final['prediction'] = grid_search_clf.predict(df.drop(columns=target_col))
+
+    if scaler == "None":
+        df_final['prediction'] = grid_search_clf.predict(df.drop(columns=target_col))
+
+    else:
+        df_final['prediction'] = grid_search_clf.predict(scaler.fit(df.drop(columns=target_col)))
+
     df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
