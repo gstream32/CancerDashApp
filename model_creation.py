@@ -17,15 +17,9 @@ logreg_param_grid = [
         'max_iter': [100, 200]
     },
     {
-        'penalty': ['l2', 'none'],
+        'penalty': ['l2'],
         'C': [0.01, 1.0, 10.0],
         'solver': ['lbfgs'],
-        'max_iter': [100, 200]
-    },
-    {
-        'penalty': ['l1', 'l2', 'elasticnet', 'none'],
-        'C': [0.01, 1.0, 10.0],
-        'solver': ['saga'],
         'max_iter': [100, 200]
     }
 ]

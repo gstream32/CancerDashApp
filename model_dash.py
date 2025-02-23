@@ -11,6 +11,8 @@ from model_creation import log_reg, svm_svc, clf
 def load_data():
 
     df_load = pd.read_csv('cancer_data.csv')
+    df_load = df_load.drop(columns=['Unnamed: 32'])
+
     return df_load
 
 # Load data for column selection
@@ -205,7 +207,7 @@ app.layout = html.Div([
         'justify-content': 'space-evenly',
         'align-items': 'center'
     }),
-## TODO add scaled and normal scatter plots
+
     # Scatter plot options
     html.Div([
         # X-Axis Dropdown
@@ -331,7 +333,7 @@ def scatter_plot(data, x, y):
     """Creates and returns scatterplot based on modeled data
     and x and y inputs from dropdown"""
 
-    if not data:
+    if not (data and x and y):
         raise exceptions.PreventUpdate
 
     df = pd.DataFrame(data)
