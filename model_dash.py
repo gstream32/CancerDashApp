@@ -168,7 +168,11 @@ app.layout = html.Div([
             'boxShadow': '2px 2px 5px rgba(0,0,0,0.2)',
             'backgroundColor': '#ecf0f1'
         })
-    ]),
+    ], style={
+        'display': 'flex',
+        'justify-content': 'space-evenly',
+        'align-items': 'center'
+    }),
 ## TODO add scaled and normal scatter plots
     # Scatter plot options
     html.Div([
@@ -183,11 +187,11 @@ app.layout = html.Div([
                 persistence=True,
                 persistence_type='session',
                 style={
-                    'border': '1px solid #ccc',
-                    'borderRadius': '5px',
-                    'padding': '5px',
+                    'padding': '0px',
                     'marginBottom': '20px',
-                    'fontSize': '1rem'
+                    'fontSize': '1rem',
+                    'height': '30px',
+                    'width': '200px'
                 }
             )
         ]),
@@ -203,15 +207,19 @@ app.layout = html.Div([
                 persistence=True,
                 persistence_type='session',
                 style={
-                    'border': '1px solid #ccc',
-                    'borderRadius': '5px',
-                    'padding': '5px',
+                    'padding': '0px',
                     'marginBottom': '20px',
-                    'fontSize': '1rem'
+                    'fontSize': '1rem',
+                    'height': '30px',
+                    'width': '200px'
                 }
             )
         ])
-    ]),
+    ], style={
+        'display': 'flex',
+        'justify-content': 'space-evenly',
+        'align-items': 'center'
+    }),
 
     # Scatter plot
     dcc.Graph(id='scatter-plot'),
@@ -301,13 +309,13 @@ def scatter_plot(data, x, y):
         x=x,
         y=y,
         color='accuracy',
-        hover_data=['accuracy', 'prediction', x, y],
+        hover_data=['accuracy', 'prediction', 'diagnosis', x, y],
         color_continuous_scale='Viridis'
     )
 
     #Update layout
     fig.update_layout(
-        title=f'Scatterplot of {y} vs {x}',
+        title=f'Scatterplot of {y} vs {x} with prediction accuracy label',
         xaxis_title=x,
         yaxis_title=y,
         font={

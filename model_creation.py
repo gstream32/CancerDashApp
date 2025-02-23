@@ -10,40 +10,36 @@ from sklearn.metrics import f1_score, recall_score, precision_score
 logreg_param_grid = [
     {
         'penalty': ['l1', 'l2'],
-        'C': [0.01, 0.1, 1.0, 10.0, 100.0],
+        'C': [0.01, 1.0, 10.0],
         'solver': ['liblinear'],
-        'max_iter': [100, 200, 500]
+        'max_iter': [100, 200]
     },
     {
         'penalty': ['l2', 'none'],
-        'C': [0.01, 0.1, 1.0, 10.0, 100.0],
+        'C': [0.01, 1.0, 10.0],
         'solver': ['lbfgs'],
-        'max_iter': [100, 200, 500]
+        'max_iter': [100, 200]
     },
     {
         'penalty': ['l1', 'l2', 'elasticnet', 'none'],
-        'C': [0.01, 0.1, 1.0, 10.0, 100.0],
+        'C': [0.01, 1.0, 10.0],
         'solver': ['saga'],
-        'max_iter': [100, 200, 500]
+        'max_iter': [100, 200]
     }
 ]
 
 svc_param_grid = {
     'C': [0.01, 0.1, 1.0, 10, 100],
-    #'kernel': ['linear', 'rbf', 'poly'],
+    'kernel': ['linear', 'rbf', 'poly'],
     'gamma': ['scale', 'auto', 0.1, 1, 10],
-    #'degree': [2, 3, 4]
+    'degree': [2, 3, 4]
 }
 
 clf_param_grid = {
-    'n_estimators': [100, 200, 500],
-    'max_depth': [None, 10, 25, 30],
+    'n_estimators': [50, 100, 200],
+    'max_depth': [10, 25, 30],
     'min_samples_split': [2, 5, 10],
-    #'min_samples_leaf': [1, 2, 5],
-    #'max_features': ['Sqrt', 'log2', None],
-    #'bootstrap': [True, False],
-    'criterion': ['gini', 'entropy']
-
+    'min_samples_leaf': [1, 2, 5]
 }
 
 def log_reg(data, target_col):
@@ -67,13 +63,13 @@ def log_reg(data, target_col):
 
     y_pred = grid_search_logreg.predict(x_test)
 
-    f1 = f1_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
+    f1 = np.round(f1_score(y_test, y_pred), 4)
+    recall = np.round(recall_score(y_test, y_pred), 4)
+    precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_logreg.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
+    df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
 
@@ -98,13 +94,13 @@ def svm_svc(data, target_col):
 
     y_pred = grid_search_svc.predict(x_test)
 
-    f1 = f1_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
+    f1 = np.round(f1_score(y_test, y_pred), 4)
+    recall = np.round(recall_score(y_test, y_pred), 4)
+    precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_svc.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
+    df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
 
@@ -130,12 +126,12 @@ def clf(data, target_col):
 
     y_pred = grid_search_clf.predict(x_test)
 
-    f1 = f1_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
+    f1 = np.round(f1_score(y_test, y_pred), 4)
+    recall = np.round(recall_score(y_test, y_pred), 4)
+    precision = np.round(precision_score(y_test, y_pred), 4)
 
     df_final = df.copy()
     df_final['prediction'] = grid_search_clf.predict(df.drop(columns=target_col))
-    df_final['accuracy'] = np.where(df_final['target_col'] == df_final['prediction'], 'Correct', 'Incorrect')
+    df_final['accuracy'] = np.where(df_final[target_col] == df_final['prediction'], 'Correct', 'Incorrect')
 
     return df_final.to_dict('records'), f1, recall, precision
