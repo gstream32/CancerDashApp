@@ -16,6 +16,12 @@ def load_data():
 # Load data for column selection
 df_vis = load_data()
 
+# Data scaling options
+scaler_options = ["None", "Standard", "MinMax", "Robust"]
+
+# List of model options
+models = ['Logistic Regression', 'SVC', 'Random Forest']
+
 # Identify numeric and categorical columns
 int_columns = df_vis.select_dtypes(include=['float64', 'int64']).columns.tolist()
 int_columns.remove('id')
@@ -25,9 +31,8 @@ str_columns = df_vis.select_dtypes(include=['object']).columns.tolist()
 # Prepare column options
 int_options = [{'label': col, 'value': col} for col in int_columns]
 str_options = [{'label': col, 'value': col} for col in str_columns]
-
-# List of model options
-models = ['Logistic Regression', 'SVC', 'Random Forest']
+scaler_options = [{'label': col, 'value': col} for col in scaler_options]
+model_options = [{'label': col, 'value': col} for col in models]
 
 # Initialize the Dash app
 app = Dash(__name__)
@@ -56,8 +61,8 @@ app.layout = html.Div([
                    ),
         dcc.Dropdown(
             id='model-dropdown',
-            options=models,
-            value=models,
+            options=model_options,
+            value=None,
             placeholder='Select a model type',
             persistence=True,
             persistence_type='session',
@@ -70,7 +75,34 @@ app.layout = html.Div([
             }
         )
     ]),
-## TODO add data scaler drop down
+
+    # Scaler Dropdown
+    html.Div([
+        html.Label('Scaler Selection',
+                   style={
+                       'fontWeight': 'bold',
+                       'marginBottom': '8px',
+                       'fontSize': '1rem',
+                       'color': '#2c3e50'
+                   }
+                   ),
+        dcc.Dropdown(
+            id='scaler-dropdown',
+            options=scaler_options,
+            value=None,
+            placeholder='Select a data scaler',
+            persistence=True,
+            persistence_type='session',
+            style={
+                'border': '1px solid #ccc',
+                'borderRadius': '5px',
+                'padding': '5px',
+                'marginBottom': '20px',
+                'fontSize': '1rem'
+            }
+        )
+    ]),
+
     # Submit Button
     html.Button('Run Analysis',
             id='button',
@@ -260,24 +292,25 @@ def filter_data(n_clicks):
         ],
     [
         Input('data', 'data'),
-        Input('model-dropdown', 'value')
+        Input('model-dropdown', 'value'),
+        Input('scaler-dropdown', 'value')
     ]
 )
 
-def create_model(data, model_choice):
+def create_model(data, model_choice, scaler_input):
     """Takes filtered data and fits model"""
 
     if not data:
         raise exceptions.PreventUpdate
 
     if model_choice == "Logistic Regression":
-       data, f1, recall, precision = log_reg(data, 'diagnosis')
+       data, f1, recall, precision = log_reg(data, 'diagnosis', scaler_input)
 
     elif model_choice == "SVC":
-        data, f1, recall, precision = svm_svc(data, 'diagnosis')
+        data, f1, recall, precision = svm_svc(data, 'diagnosis', scaler_input)
 
     elif model_choice == "Random Forest":
-       data, f1, recall, precision = clf(data, 'diagnosis')
+       data, f1, recall, precision = clf(data, 'diagnosis', scaler_input)
 
     else:
         raise ValueError("Incorrect Model Selection")

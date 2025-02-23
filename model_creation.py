@@ -5,6 +5,8 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import f1_score, recall_score, precision_score
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
+
 
 
 logreg_param_grid = [
@@ -42,7 +44,33 @@ clf_param_grid = {
     'min_samples_leaf': [1, 2, 5]
 }
 
-def log_reg(data, target_col):
+def scale_data(x_train, x_test, scaler_input):
+
+    if scaler_input == "None":
+        x_train_return = x_train
+        x_test_return = x_test
+
+    elif scaler_input == "Standard":
+        scaler = StandardScaler()
+        x_train_return = scaler.fit_transform(x_train)
+        x_test_return = scaler.transform(x_test)
+
+    elif scaler_input == "MinMax":
+        scaler = MinMaxScaler()
+        x_train_return = scaler.fit_transform(x_train)
+        x_test_return = scaler.transform(x_test)
+
+    elif scaler_input == "Robust":
+        scaler = RobustScaler()
+        x_train_return = scaler.fit_transform(x_train)
+        x_test_return = scaler.transform(x_test)
+
+    else:
+        raise ValueError("Incorrect Scaler Submission")
+
+    return x_train_return, x_test_return
+
+def log_reg(data, target_col, scaler_input):
 
     df = pd.DataFrame(data)
     str_cols = df.select_dtypes(include=['object']).columns.tolist()
@@ -51,6 +79,7 @@ def log_reg(data, target_col):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
+    x_train, x_test = scale_data(x_train, x_test, scaler_input)
 
     grid_search_logreg = GridSearchCV(
         estimator=LogisticRegression(),
@@ -74,7 +103,7 @@ def log_reg(data, target_col):
     return df_final.to_dict('records'), f1, recall, precision
 
 
-def svm_svc(data, target_col):
+def svm_svc(data, target_col, scaler_input):
     df = pd.DataFrame(data)
     str_cols = df.select_dtypes(include=['object']).columns.tolist()
     df = pd.get_dummies(df, columns=str_cols)
@@ -82,6 +111,7 @@ def svm_svc(data, target_col):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
+    x_train, x_test = scale_data(x_train, x_test, scaler_input)
 
     grid_search_svc = GridSearchCV(
         estimator=SVC(),
@@ -105,7 +135,7 @@ def svm_svc(data, target_col):
     return df_final.to_dict('records'), f1, recall, precision
 
 
-def clf(data, target_col):
+def clf(data, target_col, scaler_input):
 
     df = pd.DataFrame(data)
     str_cols = df.select_dtypes(include=['object']).columns.tolist()
@@ -114,6 +144,7 @@ def clf(data, target_col):
     y = df[target_col]
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=32)
+    x_train, x_test = scale_data(x_train, x_test, scaler_input)
 
     grid_search_clf = GridSearchCV(
         estimator=RandomForestClassifier(),
